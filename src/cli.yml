@@ -1,0 +1,13 @@
+name: finalize_latex_changes
+version: "0.1.0"
+author: Vladimir Petrik <vladko.petrik@gmail.com>
+about: Application parses the LaTeX code and remove artifacts created by "changes" package (e.g. "\added{X}" -> "X").
+args:
+- INPUT:
+    help: Sets the input file to use
+    required: true
+    index: 1
+- OUTPUT:
+      help: Sets the output file, INPUT file is overwritten if output is not specified
+      required: false
+      index: 2

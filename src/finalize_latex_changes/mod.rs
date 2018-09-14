@@ -1,3 +1,9 @@
+extern crate std;
+
+use std::path::Path;
+use std::fs::File;
+use std::io::{BufReader, BufWriter};
+
 enum Steps {
     DeleteUntilOpeningBracket,
     DeleteUntilClosingBracket,
@@ -5,18 +11,21 @@ enum Steps {
 }
 
 #[derive(Default)]
-struct Filter {
+pub struct Filter {
     counter_added: usize,
     counter_replaced: usize,
     counter_deleted: usize,
 
     open_brackets: usize,
     reversed_steps: Vec<Steps>,
-
 }
 
 impl Filter {
-    fn process(&mut self, text: &str) -> String {
+    pub fn new() -> Filter {
+        Filter { ..Default::default() }
+    }
+
+    pub fn process(&mut self, text: &str) -> String {
         let mut out = String::with_capacity(text.len());
 
         for (i, c) in text.chars().enumerate() {
@@ -74,6 +83,25 @@ impl Filter {
         }
         out
     }
+
+    pub fn process_file(&mut self, input_file: &Path, output_file: &Path) -> Result<(), std::io::Error> {
+        if input_file.eq(output_file) {
+            return Err(std::io::Error::new(std::io::ErrorKind::Other, "Input and output file cannot be equal."));
+        }
+
+        use std::io::{BufRead, Write};
+
+        let reader = BufReader::new(File::open(input_file)?);
+        let mut writer = BufWriter::new(File::create(output_file)?);
+
+
+        for l in reader.lines() {
+            let out = self.process(&l.unwrap());
+            writer.write(out.as_bytes())?;
+        }
+
+        Ok(())
+    }
 }
 
 #[cfg(test)]
@@ -110,16 +138,24 @@ mod tests {
         assert_eq!(f.process("\\deleted{wrong \\textit{another of \\textbf{another}} text}goal"), "goal");
         assert_eq!(f.counter_deleted, 5);
     }
-//
+
+    //
     #[test]
     fn test_replaced() {
-        let mut f  = Filter{..Default::default()};
+        let mut f = Filter { ..Default::default() };
         assert_eq!(f.process("\\replaced{good}{wrong}"), "good");
         assert_eq!(f.process("\\replaced{goo}{wrong}d"), "good");
         assert_eq!(f.process("g\\replaced{ood}{wrong}"), "good");
         assert_eq!(f.process("\\replaced{good}{wr\\textit{asdf}ong}"), "good");
         assert_eq!(f.process("\\replaced{g\\textit{asd}ood}{wr\\textit{asdf}ong}"), "g\\textit{asd}ood");
         assert_eq!(f.counter_replaced, 5);
+    }
+
+    #[test]
+    fn test_process_file_same_file() {
+        let mut f = Filter::new();
+        let out = f.process_file(Path::new("asdf"), Path::new("asdf"));
+        assert!(out.is_err());
     }
 }
 
