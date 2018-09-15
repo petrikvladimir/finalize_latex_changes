@@ -1,7 +1,7 @@
 #[macro_use]
 extern crate clap;
+extern crate finalize_latex_changes;
 
-pub mod finalize_latex_changes;
 
 use std::path::Path;
 
@@ -24,14 +24,12 @@ fn main() {
 
 //    todo how to overwrite input file is output is not given?
 
+
     let mut f = finalize_latex_changes::Filter::new();
-    let out = f.process_file(input_path, out_path);
-    match out {
-        Ok(_) => std::process::exit(0),
-        Err(err) => {
-            eprintln!("{}", err);
-            std::process::exit(1);
-        },
+
+    if let Err(err) = f.process_file(input_path, out_path) {
+        eprintln!("{}", err);
+        std::process::exit(1);
     }
 
 }

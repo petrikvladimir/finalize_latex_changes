@@ -1,8 +1,9 @@
-extern crate std;
+extern crate failure;
+
+use failure::Error;
 
 use std::path::Path;
 use std::fs::File;
-use std::io::{BufReader, BufWriter};
 
 enum Steps {
     DeleteUntilOpeningBracket,
@@ -84,22 +85,18 @@ impl Filter {
         out
     }
 
-    pub fn process_file(&mut self, input_file: &Path, output_file: &Path) -> Result<(), std::io::Error> {
-        if input_file.eq(output_file) {
-            return Err(std::io::Error::new(std::io::ErrorKind::Other, "Input and output file cannot be equal."));
-        }
+    pub fn process_file(&mut self, input_file: &Path, output_file: &Path) -> Result<(), Error> {
+        use std::io::{BufReader, BufWriter, BufRead, Write};
 
-        use std::io::{BufRead, Write};
+        if input_file.eq(output_file) {
+            return Err(failure::err_msg("Input and output file cannot be equal."));
+        }
 
         let reader = BufReader::new(File::open(input_file)?);
-        let mut writer = BufWriter::new(File::create(output_file)?);
-
-
-        for l in reader.lines() {
-            let out = self.process(&l.unwrap());
-            writer.write(out.as_bytes())?;
-        }
-
+        let mut wbuf = BufWriter::new(File::create(output_file)?);
+        reader.lines().try_for_each(|l| {
+            writeln!(wbuf, "{}", self.process(&l?)).map(|_| ())
+        })?;
         Ok(())
     }
 }
