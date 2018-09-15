@@ -6,3 +6,5 @@ authors = ["Vladimir Petrik <vladko.petrik@gmail.com>"]
 [dependencies]
 clap = {version = "2.32", features = ["yaml"]}
 failure = "0.1.2"
+colored = "1.6"
+walkdir = "2"

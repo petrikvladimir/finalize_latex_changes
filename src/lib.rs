@@ -127,4 +127,41 @@ impl Filter {
         })?;
         Ok(())
     }
+
+    /// Return number of processed elements.
+    ///
+    /// # Examples
+    /// ```
+    /// let mut f = finalize_latex_changes::Filter::new();
+    /// f.process("\\added{asdf}");
+    /// f.process("\\added{asdf}");
+    /// assert_eq!(f.num_added(), 2);
+    /// ```
+    pub fn num_added(&self) -> usize {
+        self.counter_added
+    }
+
+    /// Return number of processed elements.
+    ///
+    /// # Examples
+    /// ```
+    /// let mut f = finalize_latex_changes::Filter::new();
+    /// f.process("\\replaced{}{}");
+    /// assert_eq!(f.num_replaced(), 1);
+    /// ```
+    pub fn num_replaced(&self) -> usize {
+        self.counter_replaced
+    }
+
+    /// Return number of processed elements.
+    ///
+    /// # Examples
+    /// ```
+    /// let mut f = finalize_latex_changes::Filter::new();
+    /// f.process("\\deleted{}");
+    /// assert_eq!(f.num_deleted(), 1);
+    /// ```
+    pub fn num_deleted(&self) -> usize {
+        self.counter_deleted
+    }
 }
