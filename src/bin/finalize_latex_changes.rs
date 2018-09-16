@@ -9,7 +9,7 @@ use std::path::PathBuf;
 use walkdir::{WalkDir, DirEntry};
 
 fn is_hidden(entry: &DirEntry) -> bool {
-    entry.file_name().to_str().map(|s| s.starts_with(".")).unwrap_or(false)
+    entry.file_name().to_str().map(|s| s.starts_with('.')).unwrap_or(false)
 }
 
 fn is_tex(entry: &DirEntry) -> bool {
@@ -19,8 +19,7 @@ fn is_tex(entry: &DirEntry) -> bool {
 fn backup_extension() -> String {
     let start = std::time::SystemTime::now();
     let duration = start.duration_since(std::time::UNIX_EPOCH).expect("Time went backwards");
-    let t = duration.as_secs() as f64 + duration.subsec_nanos() as f64 * 1e-9;
-    String::from("tex_") + &t.to_string()
+    String::from("tex_") + &duration.as_secs().to_string() + "." + &duration.subsec_nanos().to_string()
 }
 
 fn main() {
@@ -44,7 +43,7 @@ fn main() {
             let in_path = e.into_path();
             let out_path = in_path.clone().with_extension("tex_changes");
             let backup_path = PathBuf::from(backup_dir)
-                .join(in_path.file_name().unwrap_or(std::ffi::OsStr::new("unknown_name")))
+                .join(in_path.file_name().unwrap_or_else(|| std::ffi::OsStr::new("unknown_name")))
                 .with_extension(backup_extension());
 
             println!("Processing {}\n\t backup: {} \n\t temporary: {}",
