@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/voop/finalize_latex_changes.svg?branch=master)](https://travis-ci.org/voop/finalize_latex_changes)
+
 ## About
 In LaTeX, there is a package called _changes_ which is commonly used to manually track modification in the PDF file. For example to mark that something was added to the file you can use command `\added{new text}`. The compiled PDF will containt colorized text showing which part of the pdf was modified. After you revise the document you can use `[final]` flag in the package to generate not-colorized final version of the PDF. However, the commands remain in the LaTeX source code. They need to be removed in order to start new iteration of changes.
 
