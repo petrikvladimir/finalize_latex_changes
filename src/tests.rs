@@ -76,3 +76,15 @@ fn test_create_steps_for_command() {
     assert_eq!(f.create_steps_for_command("\\replaced"), true);
     assert_eq!(f.counter_replaced, 1);
 }
+
+#[test]
+fn test_multi_line() {
+    let mut f = Filter::new();
+    assert_eq!(f.process("\\added{added_text"), "added_text");
+    assert_eq!(f.process("  asdf"), "  asdf");
+    assert_eq!(f.process("}"), "");
+    assert_eq!(f.process("\\replaced[id = vp] {"), "");
+    assert_eq!(f.process("  new "), "  new ");
+    assert_eq!(f.process("  text %"), "  text %");
+    assert_eq!(f.process("}{old text}"), "");
+}
