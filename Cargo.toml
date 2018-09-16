@@ -2,6 +2,7 @@
 name = "finalize_latex_changes"
 version = "0.1.0"
 authors = ["Vladimir Petrik <vladko.petrik@gmail.com>"]
+license = "MIT"
 
 [dependencies]
 clap = {version = "2.32", features = ["yaml"]}
